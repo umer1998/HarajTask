@@ -1,10 +1,9 @@
-package com.example.harajtask.presentation.fragments;
+package com.example.harajtask.ui.fragments;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,11 +14,9 @@ import androidx.fragment.app.Fragment;
 
 import com.example.harajtask.R;
 import com.example.harajtask.info.CarDetail;
-import com.example.harajtask.presentation.activities.MainActivity;
+import com.example.harajtask.ui.activities.MainActivity;
 import com.squareup.picasso.Picasso;
 
-import java.io.IOException;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -47,9 +44,15 @@ public class DetailScreenFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_detail_screen, container, false);
 
+        //search and navigation drawer icon are invisible here
+        //share icon is visible in detail screen
+
         context.searchView.setVisibility(View.GONE);
         context.ivNavigation.setVisibility(View.GONE);
         context.ivShare.setVisibility(View.VISIBLE);
+
+        //share title with android native share screen
+
         context.ivShare.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -75,7 +78,22 @@ public class DetailScreenFragment extends Fragment {
 
         setContent();
 
+        view.setFocusableInTouchMode(true);
+        view.requestFocus();
 
+        //setting on back pressed , so user can go back to car list (Home screen)
+        view.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    if (keyCode == KeyEvent.KEYCODE_BACK) {
+                        context.onBackPressed();
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
         return view;
     }
 
@@ -89,6 +107,7 @@ public class DetailScreenFragment extends Fragment {
         tvBody.setText(carDetail.body);
         tvCity.setText(carDetail.city);
 
+        //converting time stamp to date tiome object
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mma");
         String dateString = formatter.format(new Date(Long.parseLong(String.valueOf(carDetail.date))));
@@ -104,9 +123,6 @@ public class DetailScreenFragment extends Fragment {
         });
     }
 
-    private Bitmap convertURLtoBitmap(String thumbURL) throws IOException {
-        URL url = new URL(thumbURL);
-        Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-        return bmp;
-    }
+
+
 }

@@ -1,4 +1,4 @@
-package com.example.harajtask.presentation.adapter;
+package com.example.harajtask.ui.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -30,12 +30,14 @@ public class CarsListAdapter extends RecyclerView.Adapter<CarsListAdapter.ViewHo
     private ViewHolder viewHolder;
     List<CarDetail> carDetailList;
     List<CarDetail> carDetailListFilter;
+    List<CarDetail> copyCarDetailListFilter;
 
 
     public CarsListAdapter(Context context, List<CarDetail> carDetailList) {
         this.context = context;
         this.carDetailList = carDetailList;
         this.carDetailListFilter = carDetailList;
+        this.copyCarDetailListFilter = carDetailList;
 
     }
 
@@ -118,7 +120,7 @@ public class CarsListAdapter extends RecyclerView.Adapter<CarsListAdapter.ViewHo
         viewHolder.itemView.performClick();
     }
 
-
+// function for filtering the search of user for car through car title from carList
     @Override
     public Filter getFilter() {
         return new Filter() {
@@ -126,21 +128,16 @@ public class CarsListAdapter extends RecyclerView.Adapter<CarsListAdapter.ViewHo
             protected FilterResults performFiltering(CharSequence charSequence) {
                 String charString = charSequence.toString();
                 if (charString.isEmpty()) {
-                    carDetailListFilter = carDetailList;
+                    carDetailListFilter = copyCarDetailListFilter;
                 } else {
                     List<CarDetail> filteredList = new ArrayList<>();
                     for (CarDetail row : carDetailList) {
-
-                        // name match condition. this might differ depending on your requirement
-                        // here we are looking for name or phone number match
                         if (row.getTitle().toLowerCase().contains(charString.toLowerCase())) {
                             filteredList.add(row);
                         }
                     }
-
                     carDetailListFilter = filteredList;
                 }
-
                 FilterResults filterResults = new FilterResults();
                 filterResults.values = carDetailListFilter;
                 return filterResults;
@@ -149,6 +146,7 @@ public class CarsListAdapter extends RecyclerView.Adapter<CarsListAdapter.ViewHo
             @Override
             protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
                 carDetailListFilter = (ArrayList<CarDetail>) filterResults.values;
+                carDetailList = carDetailListFilter;
                 notifyDataSetChanged();
             }
         };

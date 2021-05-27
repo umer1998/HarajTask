@@ -1,19 +1,19 @@
-package com.example.harajtask.presentation.fragments;
+package com.example.harajtask.ui.fragments;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.SearchView;
 
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.harajtask.R;
 import com.example.harajtask.info.CarDetail;
-import com.example.harajtask.presentation.activities.MainActivity;
-import com.example.harajtask.presentation.adapter.CarsListAdapter;
+import com.example.harajtask.ui.activities.MainActivity;
+import com.example.harajtask.ui.adapter.CarsListAdapter;
 import com.example.harajtask.utils.CommonUtils;
 import com.example.harajtask.utils.OnItemClickListener;
 
@@ -30,11 +30,17 @@ public class HomeFragment extends Fragment {
     MainActivity context;
     private RecyclerView recyclerView;
     List<CarDetail> carDetailList = new ArrayList<>();
+    CarsListAdapter carsListAdapter;
 
 
     public HomeFragment(MainActivity context) {
         this.context = context;
     }
+
+
+
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -42,16 +48,20 @@ public class HomeFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
+        //home screen app bar only show search and navigation drawer icon
+        //share icon is invisiable on home screen
+
         context.searchView.setVisibility(View.VISIBLE);
         context.ivNavigation.setVisibility(View.VISIBLE);
         context.ivShare.setVisibility(View.GONE);
+
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
 
 
         try {
 
-            JSONArray cast = new JSONArray(CommonUtils.loadJSONFromAsset(context, "data.json"));
+            JSONArray cast = new JSONArray(CommonUtils.loadJSONFromAsset(context, "data.json")); //converting json data from file to string and then from string to json array
             for (int i = 0; i < cast.length(); i++) {
 
                 JSONObject jsonobject = cast.getJSONObject(i);
@@ -65,7 +75,7 @@ public class HomeFragment extends Fragment {
                 carDetail.setUsername(jsonobject.getString("username"));
                 carDetail.setTitle(jsonobject.getString("title"));
 
-                carDetailList.add(carDetail);
+                carDetailList.add(carDetail); //storing json data into carDetail object and storing carDetail object to list of carDetail
             }
 
         } catch (JSONException e) {
@@ -79,22 +89,27 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
+    // set search view so user can search any car from list through title
     private void setSearchView() {
         context.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                carsListAdapter.getFilter().filter(query);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                carsListAdapter.getFilter().filter(newText);
                 return false;
             }
         });
     }
 
+    //displaying the list of cars using recyclerView.
+
     private void setRecyclerView(List<CarDetail> carDetailList) {
-        final CarsListAdapter carsListAdapter = new CarsListAdapter(context, carDetailList);
+        carsListAdapter = new CarsListAdapter(context, carDetailList);
         recyclerView.setAdapter(carsListAdapter);
 
         carsListAdapter.setOnItemClickListener(new OnItemClickListener() {
@@ -105,7 +120,5 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    public String loadJSONfromFile() {
-        return CommonUtils.loadJSONFromAsset(context, "data.json");
-    }
+
 }

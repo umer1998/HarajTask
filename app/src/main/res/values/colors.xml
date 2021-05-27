@@ -9,6 +9,8 @@
     <color name="trancparent_white">#80ffffff</color>
     <color name="white">#FFFFFF</color>
 
+    <color name="black">#000000</color>
+
     <color name="colorDarkGray">#949494</color>
     <color name="WhiteSmoke">#F5F5F5</color>
     <color name="colorGray">#C9C9C9</color>
